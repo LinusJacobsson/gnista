@@ -1,7 +1,7 @@
 use std::ops::Add;
 use std::ops::Neg;
 use std::ops::Sub;
-
+use std::ops::AddAssign;
 #[derive(Debug)]
 pub struct Tensor {
     data: Vec<f32>,
@@ -33,6 +33,19 @@ impl Add for Tensor {
     }
 }
 
+impl AddAssign for Tensor {
+    fn add_assign(&mut self, other: Tensor) {
+        if self.shape != other.shape {
+            panic!("Shapes do not match for addition assignment");
+        }
+
+        for (a, b) in self.data.iter_mut().zip(other.data.iter()) {
+            *a += *b;
+        }
+
+        self.requires_grad = self.requires_grad || other.requires_grad;
+    }
+}
 impl Sub for Tensor {
     type Output = Tensor;
     fn sub(self, other: Tensor) -> Tensor {

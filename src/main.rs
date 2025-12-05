@@ -1,5 +1,7 @@
 use std::ops::Add;
+use std::ops::Neg;
 use std::ops::Sub;
+
 #[derive(Debug)]
 pub struct Tensor {
     data: Vec<f32>,
@@ -50,6 +52,20 @@ impl Sub for Tensor {
             grads: None,
             shape: self.shape.clone(),
             requires_grad: self.requires_grad || other.requires_grad,
+        }
+    }
+}
+
+impl Neg for Tensor {
+    type Output = Tensor;
+    fn neg(self) -> Tensor {
+        let data: Vec<f32> = self.data.iter().map(|a| -a).collect();
+
+        Tensor {
+            data,
+            grads: None,
+            shape: self.shape.clone(),
+            requires_grad: self.requires_grad,
         }
     }
 }

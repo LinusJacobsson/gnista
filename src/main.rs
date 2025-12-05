@@ -1,5 +1,5 @@
 use std::ops::Add;
-
+use std::ops::Sub;
 #[derive(Debug)]
 pub struct Tensor {
     data: Vec<f32>,
@@ -20,6 +20,29 @@ impl Add for Tensor {
             .iter()
             .zip(other.data.iter())
             .map(|(a, b)| a + b)
+            .collect();
+
+        Tensor {
+            data,
+            grads: None,
+            shape: self.shape.clone(),
+            requires_grad: self.requires_grad || other.requires_grad,
+        }
+    }
+}
+
+impl Sub for Tensor {
+    type Output = Tensor;
+    fn sub(self, other: Tensor) -> Tensor {
+        if self.shape != other.shape {
+            panic!("Shapes do not match for subtraction");
+        }
+
+        let data: Vec<f32> = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| a - b)
             .collect();
 
         Tensor {
